@@ -77,7 +77,7 @@
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/<tu-usuario>/gestor-academico-api.git
+git clone https://github.com/Sergio-S-A/gestor-academico-api.git
 cd gestor-academico-api
 
 # 2. Crear archivo .env (copiar del ejemplo)
@@ -95,7 +95,7 @@ docker compose up --build
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/<tu-usuario>/gestor-academico-api.git
+git clone https://github.com/Sergio-S-A/gestor-academico-api.git
 cd gestor-academico-api
 
 # 2. Instalar dependencias
@@ -213,7 +213,7 @@ Todos los módulos soportan importación masiva desde archivos `.xlsx` y `.csv` 
 
 ```bash
 curl -X POST http://localhost:3000/api/students/upload \
-  -F "file=@alumnos.xlsx"
+  -F "file=@students.xlsx"
 ```
 
 **Formato del archivo Excel para alumnos:**

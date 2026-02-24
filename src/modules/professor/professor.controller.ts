@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, FileTypeValidator } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Query, FileTypeValidator, BadRequestException } from '@nestjs/common';
 import { ProfessorsService } from './professor.service';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
@@ -46,12 +46,15 @@ export class ProfessorController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
-          new FileTypeValidator({ fileType: /\.(xlsx|csv)$/i }),
         ],
       }),
     )
     file: Express.Multer.File,
   ) {
+    if (!file.originalname.match(/\.(xlsx|csv)$/i)) {
+      throw new BadRequestException('Invalid file type');
+    }
+
     return this.professorService.createMany(file);
   }
 }
