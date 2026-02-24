@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # ----------------------------
+  # Servicio 1: Base de Datos
+  # ----------------------------
+  db:
+    image: mysql:8.0
+    container_name: gestor_academico_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # Healthcheck: Avisa cuando la BD está lista para recibir conexiones
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # ----------------------------
+  # Servicio 2: API NestJS
+  # ----------------------------
+  api:
+    build: . # Construye usando el Dockerfile de la carpeta actual
+    container_name: gestor_academico_api
+    restart: always
+    ports:
+      - "${PORT}:3000" # Expone el puerto del .env (3000)
+    environment:
+      # Sobreescribimos el HOST. Dentro de Docker, "localhost" es el contenedor mismo.
+      # Para conectar a la BD, usamos el nombre del servicio: "db"
+      DB_HOST: db 
+      DB_PORT: 3306
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      PORT: 3000
+    volumes:
+      - .:/app # Bind Mount: Lo que edites en tu VSCode se refleja en Docker al instante
+      - /app/node_modules # Evita conflicto entre node_modules de tu PC y el de Linux(Docker)
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que la BD esté saludable antes de iniciar la API
+
+  # (Opcional) Adminer sigue siendo útil
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
