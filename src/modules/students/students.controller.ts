@@ -12,31 +12,31 @@ export class StudentsController {
   constructor(private readonly studentsService: StudentsService) { }
 
   @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.create(createStudentDto);
+  async create(@Body() createStudentDto: CreateStudentDto) {
+    return await this.studentsService.create(createStudentDto);
   }
 
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.studentsService.findAll(paginationDto);
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return await this.studentsService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.studentsService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.studentsService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.studentsService.update(id, updateStudentDto);
+    return await this.studentsService.update(id, updateStudentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.studentsService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.studentsService.remove(id);
   }
 
   @Post('upload')
@@ -55,6 +55,6 @@ export class StudentsController {
       throw new BadRequestException('Invalid file type');
     }
 
-    return this.studentsService.createMany(file);
+    return await this.studentsService.createMany(file);
   }
 }

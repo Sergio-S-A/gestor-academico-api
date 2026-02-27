@@ -31,7 +31,7 @@ services:
     container_name: gestor_academico_api
     restart: always
     ports:
-      - "${PORT}:3000" # Expone el puerto del .env (3000)
+      - "${DOCKER_DB_PORT:-3037}:3306" 
     environment:
       # Sobreescribimos el HOST. Dentro de Docker, "localhost" es el contenedor mismo.
       # Para conectar a la BD, usamos el nombre del servicio: "db"

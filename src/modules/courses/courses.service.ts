@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from '../professor/entities/professor.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { BulkImportService } from 'src/common/services/bulk-import.service';
+import { PaginatedResult } from 'src/common/dto/paginated-result.dto';
 
 @Injectable()
 export class CoursesService extends BulkImportService<CreateCourseDto> {
@@ -45,20 +46,29 @@ export class CoursesService extends BulkImportService<CreateCourseDto> {
   }
 
 
-  async findAll(paginationDto: PaginationDto, estado?: boolean): Promise<Course[]> {
+  async findAll(paginationDto: PaginationDto, estado?: boolean): Promise<PaginatedResult<Course>> {
     const { limit = 10, offset = 0 } = paginationDto;
 
     const queryOptions: FindManyOptions<Course> = {
       relations: ['professor'],
       take: limit,
-      skip: offset,
+      skip: offset
     };
 
     if (estado !== undefined) {
       queryOptions.where = { estado };
     }
 
-    return this.courseRepository.find(queryOptions);
+    const [data, total] = await this.courseRepository.findAndCount(queryOptions);
+
+    return {
+      data,
+      meta: {
+        total,
+        limit,
+        offset,
+      }
+    };
   }
 
 

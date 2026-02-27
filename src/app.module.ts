@@ -10,10 +10,13 @@ import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
+    // Carga .env globalmente y valida tipos cruciales al arrancar
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,
     }),
+
+    // Inyecta dinámicamente configuración a la conexión de bd
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

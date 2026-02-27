@@ -9,6 +9,7 @@ import { Course } from '../courses/entities/course.entity';
 import { ENROLLMENT_STATE } from 'src/common/enums/enrollment_state';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { BulkImportService } from 'src/common/services/bulk-import.service';
+import { PaginatedResult } from 'src/common/dto/paginated-result.dto';
 
 @Injectable()
 export class EnrollmentsService extends BulkImportService<CreateEnrollmentDto> {
@@ -56,17 +57,23 @@ export class EnrollmentsService extends BulkImportService<CreateEnrollmentDto> {
   }
 
 
-  async findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<Enrollment>> {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    return await this.enrollmentRepository.find({
+    const [data, total] = await this.enrollmentRepository.findAndCount({
       take: limit,
       skip: offset,
-      relations: ['student', 'course'],
-      order: {
-        enrollmentDate: 'DESC'
-      }
+      relations: ['student', 'course']
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        limit,
+        offset,
+      }
+    };
   }
 
   private async validationStudent(studentId: number): Promise<Student> {

@@ -6,6 +6,7 @@ import { UpdateProfessorDto } from "./dto/update-professor.dto";
 import { Repository } from 'typeorm';
 import { PaginationDto } from "src/common/dto/pagination.dto";
 import { BulkImportService } from "src/common/services/bulk-import.service";
+import { PaginatedResult } from "src/common/dto/paginated-result.dto";
 
 @Injectable()
 export class ProfessorsService extends BulkImportService<CreateProfessorDto> {
@@ -38,16 +39,22 @@ export class ProfessorsService extends BulkImportService<CreateProfessorDto> {
   }
 
 
-  async findAll(paginationDto: PaginationDto): Promise<Professor[]> {
+  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<Professor>> {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    return await this.professorRepository.find({
+    const [data, total] = await this.professorRepository.findAndCount({
       take: limit,
-      skip: offset,
-      order: {
-        createdAt: 'DESC',
-      },
+      skip: offset
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        limit,
+        offset,
+      }
+    };
   }
 
 

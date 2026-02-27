@@ -66,7 +66,7 @@
 
 - **Node.js** >= 18.x
 - **npm** >= 9.x
-- **MySQL** 8.0 (o Docker)
+- **MySQL** 8.0
 - **Docker** y **Docker Compose** (opcional, recomendado)
 
 ---
@@ -91,7 +91,7 @@ docker compose up --build
 # Adminer (gestor visual de BD) en http://localhost:8080
 ```
 
-### Opción 2: Sin Docker (Manual)
+### Opción 2: Sin Docker
 
 ```bash
 # 1. Clonar el repositorio
@@ -105,11 +105,8 @@ npm install
 cp .env.example .env
 # Editar .env con las credenciales de tu MySQL local
 
-# 4. Asegurarse de tener MySQL corriendo y crear la base de datos
-mysql -u root -p -e "CREATE DATABASE gestor_academico_db;"
-
-# 5. Ejecutar en modo desarrollo (con hot-reload)
-npm run start:dev
+# 4. Crear Base de Datos y lanzar aplicación (Todo en un comando)
+npm run start:local
 ```
 
 ### Cargar datos de prueba (Seed)
@@ -194,6 +191,7 @@ Crear un archivo `.env` en la raíz del proyecto basado en `.env.example`:
 |---|---|---|
 | `GET` | `/api/seed` | Ejecutar semilla de datos iniciales |
 
+
 ### Parámetros de paginación
 
 Todos los endpoints de listado (`GET`) soportan:
@@ -202,6 +200,24 @@ Todos los endpoints de listado (`GET`) soportan:
 |---|---|---|---|
 | `limit` | number | Cantidad de resultados por página | `?limit=20` |
 | `offset` | number | Cantidad de resultados a omitir | `?offset=10` |
+
+**Estructura de la respuesta paginada:**
+
+La API estandariza las respuestas de listas envolviendo los resultados dentro de `data` y proporcionando información `meta` para su uso en el lado del cliente (frontend):
+
+```json
+{
+  "data": [
+    { "id": 1, "nombre": "...", "..." : "..." },
+    { "id": 2, "nombre": "...", "..." : "..." }
+  ],
+  "meta": {
+    "total": 50,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
 
 ---
 
@@ -261,7 +277,10 @@ src/
 ├── config/
 │   └── env.validation.ts              # Validación de variables de entorno (Joi)
 │
-├── common/                            # Recursos compartidos
+├── database/
+│   └── setup-db.ts                    # Validación de variables de entorno (Joi)
+│
+├── common/                            # Script de auto creación y aseguramiento de BD
 │   ├── dto/
 │   │   ├── create-person.dto.ts       # DTO base para personas
 │   │   └── pagination.dto.ts          # DTO de paginación reutilizable

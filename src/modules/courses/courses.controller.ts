@@ -12,43 +12,43 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) { }
 
   @Post()
-  create(@Body() createCourseDto: CreateCourseDto) {
+  async create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Query() paginationDto: PaginationDto,
     @Query('estado') estado?: string,
   ) {
     const isActive = estado === 'true' ? true : estado === 'false' ? false : undefined;
-    return this.coursesService.findAll(paginationDto, isActive);
+    return await this.coursesService.findAll(paginationDto, isActive);
   }
 
   @Put(':courseId/assign-professor/:professorId')
-  assignProfessor(
+  async assignProfessor(
     @Param('courseId', ParseIntPipe) courseId: number,
     @Param('professorId', ParseIntPipe) professorId: number,
   ) {
-    return this.coursesService.assignProfessor(courseId, professorId);
+    return await this.coursesService.assignProfessor(courseId, professorId);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.coursesService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.coursesService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCourseDto: UpdateCourseDto,
   ) {
-    return this.coursesService.update(id, updateCourseDto);
+    return await this.coursesService.update(id, updateCourseDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.coursesService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.coursesService.remove(id);
   }
 
   @Post('upload')
@@ -67,6 +67,6 @@ export class CoursesController {
       throw new BadRequestException('Invalid file type');
     }
 
-    return this.coursesService.createMany(file);
+    return await this.coursesService.createMany(file);
   }
 }

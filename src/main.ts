@@ -8,10 +8,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
+  // Transforma tipos básicos (ej: string a number) automáticamente
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
+      whitelist: true, // Elimina propiedades del request body que no estén en el DTO
+      forbidNonWhitelisted: true, // Rechaza la petición si trae datos extraños
       transform: true,
     }),
   );
